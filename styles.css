@@ -1,0 +1,223 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: Arial, sans-serif;
+    background-color: #FFE4C4;
+    color: #333;
+    padding: 20px;
+}
+
+h1{
+    text-align: center;
+    color:#A0522D;
+    font-size: 2.5rem;
+}
+
+#container{
+    max-width: 100%;
+    margin: 0 auto;
+    display : grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+
+}
+
+#backdrop{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 998;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.3s, opacity 0.5s;
+}
+
+#monthly_budget{
+    width: 80%;
+    max-width:500px;
+    height:40%;
+    padding: 35px;
+    border-radius: 10px;
+    background-color: rgba(247, 124, 67, 0.6);
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+    position: fixed;
+    z-index: 999;
+    top:30%;
+    left:10%;
+    transform: scale(0.9);
+    transition: transform 0.3s ease-in-out;
+}
+
+.backdrop-active{
+    visibility: visible;
+    opacity: 1;
+}
+
+.monthly_budget-active{
+    transform: scale(1);
+}
+
+
+
+#monthly_budget h2{
+    text-align: center;
+    color: #5f250a;
+    margin-bottom: 15px;
+}
+
+#monthly_budget label{
+    display: block;
+    margin: 10px 0 20px 0;
+    font-weight: bold;
+    color:#5f250a;
+}
+
+#monthly_budget input{
+    width: 100%;
+    display : block;
+    padding: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+#set_budget{
+    width: 100%;
+    padding: 10px;
+    background-color: #FF7F50;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#set_budget:hover{
+    background-color: #FF6347;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+}
+
+#expense_summary{
+    width: 100%;
+    height:13rem;
+    margin: 20px auto;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #FFE4C4;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+}
+
+#expense_summary h2{
+    text-align: center;
+    color: #A0522D;
+    margin-bottom: 15px;
+}
+
+#summary{
+    display: flex;
+    flex-wrap: wrap;
+    
+}
+
+
+#summary p{
+    font-size: 18px;
+    margin: 10px 0;
+    text-align: center;
+    color :#A0522D;
+    width:50%;
+}
+
+#summary span{
+    font-weight: bold;
+    text-align:center;
+    display : block;
+    color:#FF7F50;
+}
+
+#new_exp{
+    width:100%;
+    margin: 20px auto;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #FFE4C4;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+}
+
+#new_exp label{
+    display: block;
+    margin: 10px 0 5px 0;
+    font-weight: bold;
+    color:#A0522D;
+}
+
+#new_exp input, #new_exp select{
+    width: 100%;
+    display : block;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+#add_expense{
+    width: 100%;
+    padding: 10px;
+    background-color: #FF7F50;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#add_expense:hover{
+    background-color: #FF6347;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+#expense{
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    grid-column: span 2;
+}
+#expense h2{
+    text-align: center;
+    color: #A0522D;
+    margin-bottom: 15px;
+}
+
+#expense table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#expense th, #expense td{
+    border: 1px solid #FF7F50;
+    padding: 10px;
+    text-align: center;
+}
+
+#expense th{
+    background-color: #FF7F50;
+    color: white;
+}
+
+#expense tr:nth-child(even){
+    background-color: #FFF0E0;
+}
+
+#expense tr:hover{
+    background-color: #FFDAB9;
+}
+
+

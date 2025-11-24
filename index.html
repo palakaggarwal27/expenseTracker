@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Expense Tracker</title>
+</head>
+<body>
+   <header>
+    <h1>Expense Tracker</h1>
+   </header>
+   <div id="backdrop">
+    <div id="monthly_budget">
+        <h2>Set Monthly Budget</h2>
+        <label for="budget_input">Budget Amount:
+            <input id="budget_input" type="number" placeholder="Enter Budget in Rs.">
+        </label>
+        <button id="set_budget">Set Budget</button>
+        </div>
+    </div>
+    <div id="container">
+    <div id="new_exp">
+        <h2>Add New Expense</h2>
+        <label for="date">Date:
+            <input id="date" type="date">
+        </label>
+        <label for="amount">Amount:
+            <input id="amount" type="number" placeholder="Enter Amount in Rs.">
+        </label>
+        <label for="info">Description:
+            <input id="info" type="text" placeholder="Description">
+        </label>
+        <label for="category">Category:
+            <select id="category" required>
+                <option value="" disabled selected hidden>Select Category</option>
+                <option value="food">🍴 Food</option>
+                <option value="transport">🚌 Transport</option>
+                <option value="enetertainment">🎬 Subscriptions/Entertainment</option>
+                <option value="utilities">💡 Utilities</option>
+                <option value="travel">✈️ Travel</option>
+                <option value="other">📦 Others</option>
+            </select>
+        </label>
+        <button id="add_expense" >Add Expense</button>
+    </div>
+
+    <div id="expense_summary">
+        <h2>Summary</h2>
+        <div id="summary">
+            <p>Total Expenses <span id="total">0</span></p>
+            <p>Today's Expenses <span id="today">0</span></p>
+            <p>Monthly Budget <span id="budget">0</span></p>
+            <p>Remaining <span id="remaining">0</span></p>
+        </div>
+    </div>
+
+        <div id="expense">
+        <h2>Recent Expenses</h2>
+        <table>
+            <thead>
+                    <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    </tr>
+            </thead>
+            <tbody id="expense_list">
+                    <tr>
+                        <td colspan="4">No expenses added yet.</td>
+                    </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+<script src="script.js"></script>  
+</body>
+</html>
