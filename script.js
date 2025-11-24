@@ -7,6 +7,8 @@ const addDateInput = document.getElementById('date');
 const addAmountInput = document.getElementById('amount');
 const addInfoInput = document.getElementById('info');
 const addCategorySelect = document.getElementById('category');
+const editBudgetBtn = document.getElementById('edit_budget');
+const resetBtn = document.getElementById('reset');
 
 let expenses = localStorage.getItem('expenses') ? JSON.parse(localStorage.getItem('expenses')) : [];
 let monthlyBudget = localStorage.getItem('monthlyBudget') ? parseFloat(localStorage.getItem('monthlyBudget')) : 0;
@@ -15,6 +17,17 @@ let monthlyBudget = localStorage.getItem('monthlyBudget') ? parseFloat(localStor
 
 
 window.addEventListener('DOMContentLoaded', loadData);
+
+resetBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to reset all data? This action cannot be undone.')) {
+        expenses = [];
+        monthlyBudget = 0;
+        displayExpenses();
+        updateSummary();
+        saveData();
+    }
+});
+
 
 setBudgetBtn.addEventListener('click', () => {
     const raw = document.getElementById('budget_input').value;
@@ -44,7 +57,10 @@ function openModal() {
     modalContent.style.transform = 'scale(1)';
 }
 
+editBudgetBtn.addEventListener('click', openModal);
+
 // setTimeout(openModal, 500);
+
 
 
 addExpenseBtn.addEventListener('click', add_expense);
