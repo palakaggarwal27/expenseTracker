@@ -42,7 +42,22 @@
                 <option value="other">📦 Others</option>
             </select>
         </label>
-        <button id="add_expense" >Add Expense</button>
+        <label for="custom_category" id="custom_category_label" hidden>New Category:
+            <input id="custom_category" type="text" placeholder="Enter a category name">
+        </label>
+        <label for="payment_mode">Payment Mode:
+            <select id="payment_mode" required>
+                <option value="" disabled selected hidden>Select Payment Mode</option>
+                <option value="upi">UPI</option>
+                <option value="cash">Cash</option>
+                <option value="debit_card">Debit Card</option>
+                <option value="credit_card">Credit Card</option>
+            </select>
+        </label>
+        <div class="form-actions">
+            <button id="add_expense" >Add Expense</button>
+            <button id="cancel_edit" type="button" hidden>Cancel Edit</button>
+        </div>
     </div>
 
     <div id="expense_summary">
@@ -66,12 +81,13 @@
                     <th>Amount</th>
                     <th>Description</th>
                     <th>Category</th>
-            <th>Actions</th>
+                        <th>Payment Mode</th>
+                        <th>Actions</th>
                     </tr>
             </thead>
             <tbody id="expense_list">
                     <tr>
-            <td colspan="5">No expenses added yet.</td>
+            <td colspan="6">No expenses added yet.</td>
                     </tr>
             </tbody>
         </table>

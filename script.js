@@ -7,16 +7,29 @@ const addDateInput = document.getElementById('date');
 const addAmountInput = document.getElementById('amount');
 const addInfoInput = document.getElementById('info');
 const addCategorySelect = document.getElementById('category');
+const customCategoryLabel = document.getElementById('custom_category_label');
+const customCategoryInput = document.getElementById('custom_category');
+const paymentModeSelect = document.getElementById('payment_mode');
+const cancelEditBtn = document.getElementById('cancel_edit');
 const editBudgetBtn = document.getElementById('edit_budget');
 const resetBtn = document.getElementById('reset');
 
 let expenses = localStorage.getItem('expenses') ? JSON.parse(localStorage.getItem('expenses')) : [];
 let monthlyBudget = localStorage.getItem('monthlyBudget') ? parseFloat(localStorage.getItem('monthlyBudget')) : 0;
+let customCategories = localStorage.getItem('customCategories') ? JSON.parse(localStorage.getItem('customCategories')) : [];
+let editingExpenseId = null;
 
 
 
 
 window.addEventListener('DOMContentLoaded', loadData);
+
+addCategorySelect.addEventListener('change', () => {
+    const isOther = addCategorySelect.value === 'other';
+    customCategoryLabel.hidden = !isOther;
+    customCategoryInput.required = isOther;
+    if (!isOther) customCategoryInput.value = '';
+});
 
 resetBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to reset all data? This action cannot be undone.')) {
@@ -64,6 +77,7 @@ editBudgetBtn.addEventListener('click', openModal);
 
 
 addExpenseBtn.addEventListener('click', add_expense);
+cancelEditBtn.addEventListener('click', resetExpenseForm);
 
 function add_expense() {
   
@@ -71,21 +85,31 @@ function add_expense() {
     const add_amount = addAmountInput.value;
     const add_info = addInfoInput.value.trim();
     const add_category = addCategorySelect.value;
+    const custom_category = customCategoryInput.value.trim();
+    const payment_mode = paymentModeSelect.value;
+    const category = add_category === 'other' ? custom_category : add_category;
 
-    if (add_date && add_amount && add_info && add_category) {
-        const expense = {
+    if (add_date && add_amount && add_info && category && payment_mode) {
+        const expense = editingExpenseId === null ? {
             id: Date.now(),
             date: add_date,
             amount: parseFloat(add_amount),
             description: add_info,
-            category: add_category
-        };
-        expenses.push(expense);
+            category,
+            paymentMode: payment_mode
+        } : expenses.find(item => item.id === editingExpenseId);
 
-        addDateInput.value = '';
-        addAmountInput.value = '';
-        addInfoInput.value = '';
-        addCategorySelect.value = '';
+        if (editingExpenseId === null) {
+            expenses.push(expense);
+        } else {
+            Object.assign(expense, { date: add_date, amount: parseFloat(add_amount), description: add_info, category, paymentMode: payment_mode });
+        }
+        if (add_category === 'other' && !customCategories.includes(custom_category)) {
+            customCategories.push(custom_category);
+            addCustomCategoryOption(custom_category);
+        }
+
+        resetExpenseForm();
 
         displayExpenses();
         updateSummary();
@@ -98,23 +122,48 @@ function add_expense() {
 
 function displayExpenses() {
     const expenseList = document.getElementById('expense_list');
+    expenseList.replaceChildren();
 
     if (expenses.length === 0) {
-        expenseList.innerHTML = '<tr><td colspan="5">No expenses added yet.</td></tr>';
+        const emptyRow = document.createElement('tr');
+        const emptyCell = document.createElement('td');
+        emptyCell.colSpan = 6;
+        emptyCell.textContent = 'No expenses added yet.';
+        emptyRow.appendChild(emptyCell);
+        expenseList.appendChild(emptyRow);
         return;
     }
 
     const sortedExpenses = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    expenseList.innerHTML = sortedExpenses.map(expense => `
-        <tr>
-            <td>${formatDate(expense.date)}</td>
-            <td>Rs. ${expense.amount.toFixed(2)}</td>
-            <td>${expense.description}</td>
-            <td>${getCategoryIcon(expense.category)}</td>
-            <td><button class="delete-btn" onclick="deleteExpense(${expense.id})">Delete</button></td>
-        </tr>
-    `).join('');
+    sortedExpenses.forEach(expense => {
+        const row = document.createElement('tr');
+        [
+            formatDate(expense.date),
+            `Rs. ${expense.amount.toFixed(2)}`,
+            expense.description,
+            getCategoryIcon(expense.category),
+            formatPaymentMode(expense.paymentMode)
+        ].forEach(value => {
+            const cell = document.createElement('td');
+            cell.textContent = value;
+            row.appendChild(cell);
+        });
+
+        const actionsCell = document.createElement('td');
+        actionsCell.className = 'actions';
+        const editButton = document.createElement('button');
+        editButton.className = 'edit-btn';
+        editButton.textContent = 'Edit';
+        editButton.addEventListener('click', () => editExpense(expense.id));
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-btn';
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', () => deleteExpense(expense.id));
+        actionsCell.append(editButton, deleteButton);
+        row.appendChild(actionsCell);
+        expenseList.appendChild(row);
+    });
 }
 
 function getCategoryIcon(category) {
@@ -126,13 +175,35 @@ function getCategoryIcon(category) {
         'travel': '✈️ Travel',
         'other': '📦 Others'
     };
-    return icons[category] || category;
+    return icons[category] || `📦 ${category}`;
+}
+
+function formatPaymentMode(paymentMode) {
+    const labels = { upi: 'UPI', cash: 'Cash', debit_card: 'Debit Card', credit_card: 'Credit Card' };
+    return labels[paymentMode] || 'Not specified';
+}
+
+function addCustomCategoryOption(category) {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = `📦 ${category}`;
+    addCategorySelect.appendChild(option);
+}
+
+function loadCustomCategories() {
+    customCategories = Array.isArray(customCategories) ? customCategories : [];
+    customCategories.forEach(category => {
+        if (![...addCategorySelect.options].some(option => option.value === category)) {
+            addCustomCategoryOption(category);
+        }
+    });
 }
 
 function saveData() {
     try {
         localStorage.setItem('expenses', JSON.stringify(expenses));
         localStorage.setItem('monthlyBudget', monthlyBudget.toString());
+        localStorage.setItem('customCategories', JSON.stringify(customCategories));
     } catch (e) {
         console.error('Failed to save data to localStorage:', e);
     }
@@ -146,6 +217,39 @@ function deleteExpense(id) {
         updateSummary();
         saveData();
     }
+}
+
+function editExpense(id) {
+    const expense = expenses.find(item => item.id === id);
+    if (!expense) return;
+    editingExpenseId = id;
+    addDateInput.value = expense.date;
+    addAmountInput.value = expense.amount;
+    addInfoInput.value = expense.description;
+    paymentModeSelect.value = expense.paymentMode || '';
+    if (![...addCategorySelect.options].some(option => option.value === expense.category)) {
+        addCustomCategoryOption(expense.category);
+    }
+    addCategorySelect.value = expense.category;
+    customCategoryLabel.hidden = true;
+    customCategoryInput.required = false;
+    addExpenseBtn.textContent = 'Save Changes';
+    cancelEditBtn.hidden = false;
+    addInfoInput.focus();
+}
+
+function resetExpenseForm() {
+    editingExpenseId = null;
+    addDateInput.value = '';
+    addAmountInput.value = '';
+    addInfoInput.value = '';
+    addCategorySelect.value = '';
+    customCategoryInput.value = '';
+    customCategoryLabel.hidden = true;
+    customCategoryInput.required = false;
+    paymentModeSelect.value = '';
+    addExpenseBtn.textContent = 'Add Expense';
+    cancelEditBtn.hidden = true;
 }
 
 function updateSummary() {
@@ -179,7 +283,6 @@ function formatDate(dateString) {
 }
 
 function loadData() {
-    // Prefer localStorage values if available; fall back to window.expenseTrackerData
     const storedExpenses = localStorage.getItem('expenses');
     const storedBudget = localStorage.getItem('monthlyBudget');
 
@@ -200,6 +303,7 @@ function loadData() {
         monthlyBudget = window.expenseTrackerData.monthlyBudget;
     }
 
+    loadCustomCategories();
     displayExpenses();
     updateSummary();
 
